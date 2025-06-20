@@ -25,11 +25,7 @@ jobs:
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
         Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
-
-    - name: Restart RDP Service
-      run: |
-        Restart-Service TermService
-        Start-Sleep -Seconds 10
+        Write-Output "RDP configuration completed."
 
     - name: Start Ngrok Tunnel
       run: |
