@@ -4,7 +4,6 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
@@ -27,13 +26,7 @@ jobs:
         Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
         Write-Output "RDP configuration completed."
 
-    - name: Start Ngrok TCP Tunnel
+    - name: Start Ngrok TCP Tunnel and Block Runner
       run: |
-        .\ngrok\ngrok.exe tcp 3389 > tunnel.log &
-        Start-Sleep -Seconds 10
-        Write-Output "Ngrok TCP tunnel started. Visit https://dashboard.ngrok.com/cloud/tunnels to get the endpoint address."
-
-    - name: Keep GitHub Runner Alive
-      run: |
-        Write-Output "Keeping GitHub Actions runner alive for 6 hours to maintain RDP connection..."
-        Start-Sleep -Seconds 21600  # 6 hours
+        Write-Output "Starting Ngrok tunnel for RDP..."
+        .\ngrok\ngrok.exe tcp 3389
