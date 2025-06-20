@@ -27,13 +27,13 @@ jobs:
         Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
         Write-Output "RDP configuration completed."
 
-    - name: Start Ngrok Tunnel
+    - name: Start Ngrok TCP Tunnel
       run: |
         .\ngrok\ngrok.exe tcp 3389 > tunnel.log &
         Start-Sleep -Seconds 10
-        Write-Output "Ngrok tunnel started. Check https://dashboard.ngrok.com/status/tunnels for details."
+        Write-Output "Ngrok TCP tunnel started. Visit https://dashboard.ngrok.com/cloud/tunnels to get the endpoint address."
 
     - name: Keep GitHub Runner Alive
       run: |
-        Write-Output "Keeping runner alive for RDP access for 6 hours..."
+        Write-Output "Keeping GitHub Actions runner alive for 6 hours to maintain RDP connection..."
         Start-Sleep -Seconds 21600  # 6 hours
