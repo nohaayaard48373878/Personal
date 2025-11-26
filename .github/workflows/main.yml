@@ -1,6 +1,8 @@
 name: CL-RDP-Ngrok
 
-on: [push, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,16 +20,20 @@ jobs:
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
 
-    - name: Enable RDP
+    - name: Enable RDP Securely
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
-        Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
-        Write-Output "RDP configuration completed."
 
-    - name: Start Ngrok TCP Tunnel and Block Runner
+        $pass = [System.Web.Security.Membership]::GeneratePassword(20,4)
+        Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString $pass -AsPlainText -Force)
+        Write-Output "======================================"
+        Write-Output "RDP USER: runneradmin"
+        Write-Output "RDP PASS: $pass"
+        Write-Output "======================================"
+
+    - name: Start Ngrok TCP Tunnel (10 Minutes Only)
       run: |
-        Write-Output "Starting Ngrok tunnel for RDP..."
-        .\ngrok\ngrok.exe tcp 3389
-        
+        Write-Output "Starting Ngrok RDP Tunnel for 10 minutes..."
+        timeout 10m .\ngrok\ngrok.exe tcp 3389
